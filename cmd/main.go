@@ -7,6 +7,7 @@ import (
 
 	"github.com/Kry0z1/fancytasks/internal/handlers"
 	_ "github.com/Kry0z1/fancytasks/internal/redis"
+	_ "github.com/Kry0z1/fancytasks/pkg/database"
 	"github.com/Kry0z1/fancytasks/pkg/middleware"
 )
 

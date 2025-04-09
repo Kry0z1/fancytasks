@@ -4,35 +4,63 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - 8000:8000
     environment:
       - REDIS_ADDR=redis:6379
       - REDIS_PASS=${REDIS_PASS}
     depends_on:
       - redis
+      - postgresql
     networks:
-      - backend
+      - redis
+      - postgres
 
   redis:
     image: redis:7.2-alpine
     ports:
-      - "6379:6379"
+      - 6379:6379
     volumes:
-      - redis_data:/data
+      - ${DATA_PATH}/redis:/data
       - ./redis.conf:/usr/local/etc/redis/redis.conf
     networks:
-      - backend
+      - redis
     healthcheck:
       test: ["CMD", "redis-cli", "--raw", "info", "memory", "|", "grep", "used_memory:"]
       interval: 30s
       timeout: 10s
       retries: 3
     command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASS}
-    
+  
+  postgresql:
+    image: postgres:17.4-alpine
+    restart: always
+    ports:
+      - 15432:5432
+    networks:
+      - postgres
+    volumes:
+      - ${DATA_PATH}/postgres/:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASS}
+      - POSTGRES_DB=${POSTGRES_DB}
 
-volumes:
-  redis_data:
+  pgadmin:
+    image: dpage/pgadmin4
+    privileged: true
+    ports:
+      - 15433:80
+    depends_on:
+      - postgresql
+    networks:
+      - postgres
+    volumes:
+      - ${DATA_PATH}/pgadmin/:/var/lib/pgadmin/
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PG_ADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PG_ADMIN_DEFAULT_PASS}
 
 networks:
-  backend:
+  redis:
+    driver: bridge
+  postgres:
     driver: bridge
