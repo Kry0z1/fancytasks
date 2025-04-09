@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS users(
     username VARCHAR(128) PRIMARY KEY,
-	HashedPassword VARCHAR(256) NOT NULL
+	hashed_password VARCHAR(256) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS base_tasks(
     id SERIAL PRIMARY KEY,
     title VARCHAR(128) NOT NULL,
-    description VARCHAR(512),
+    description VARCHAR(512) NOT NULL,
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS base_tasks(
 CREATE TABLE IF NOT EXISTS events(
     id SERIAL PRIMARY KEY,
     title VARCHAR(128) NOT NULL,
-    description VARCHAR(512),
+    description VARCHAR(512) NOT NULL,
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
     starts_at TIME NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS events(
 CREATE TABLE IF NOT EXISTS tasks_with_deadline(
     id SERIAL PRIMARY KEY,
     title VARCHAR(128) NOT NULL,
-    description VARCHAR(512),
+    description VARCHAR(512) NOT NULL,
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
     deadline TIME NOT NULL,
@@ -36,23 +36,17 @@ CREATE TABLE IF NOT EXISTS tasks_with_deadline(
     FOREIGN KEY (owner) REFERENCES users(username)
 );
 
-CREATE TABLE IF NOT EXISTS repeating_task(
+CREATE TABLE IF NOT EXISTS repeating_tasks(
     id SERIAL PRIMARY KEY,
     title VARCHAR(128) NOT NULL,
-    description VARCHAR(512),
+    description VARCHAR(512) NOT NULL,
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
     starts_at TIME,
     ends_at TIME,
     period INTERVAL NOT NULL,
     loop INTEGER NOT NULL,
+    excepts INTEGER[] NOT NULL,
 
     FOREIGN KEY (owner) REFERENCES users(username)
-);
-
-CREATE TABLE IF NOT EXISTS excepts (
-    task_id INTEGER PRIMARY KEY,
-    value INTEGER NOT NULL,
-
-    FOREIGN KEY (task_id) REFERENCES repeating_task(id)
 );
