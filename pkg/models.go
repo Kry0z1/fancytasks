@@ -5,6 +5,7 @@ import "time"
 type User struct {
 	Username          string
 	HashedPassword    string
+	BaseTasks         []BaseTask
 	Events            []Event
 	TasksWithDeadline []TaskWithDeadline
 	RepeatingTasks    []RepeatingTask
@@ -32,7 +33,7 @@ type TaskWithDeadline struct {
 // For every `Loop` tasks those at places in Except are considered turned off
 type RepeatingTask struct {
 	Event
-	Period time.Time
+	Period time.Duration
 	Loop   int
 	Except []int
 }
