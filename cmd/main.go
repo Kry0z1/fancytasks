@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/Kry0z1/fancytasks/pkg/middleware"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -24,9 +26,12 @@ func main() {
 
 	fmt.Println(pong)
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Hello", http.StatusOK)
-	})
+	greet := func(w http.ResponseWriter, r *http.Request) error {
+		return io.EOF
+	}
 
+	http.Handle("GET /", middleware.CollectErrorFunc(greet, middleware.Logger))
+
+	fmt.Println("Listening on :8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))
 }
