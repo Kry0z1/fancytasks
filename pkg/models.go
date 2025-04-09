@@ -3,12 +3,12 @@ package tasks
 import "time"
 
 type UserBase struct {
-	Username string `json:"username"`
+	Username string
 }
 
 type UserRegister struct {
 	UserBase
-	Password string `json:"password"`
+	Password string
 }
 
 type UserStored struct {
@@ -20,27 +20,28 @@ type UserStored struct {
 }
 
 type BaseTask struct {
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Done        bool   `json:"done"`
+	ID          int
+	Title       string
+	Description string
+	Done        bool
 	Owner       UserBase
 }
 
 type Event struct {
 	BaseTask
-	StartsAt time.Time `json:"starts_at"`
-	EndsAt   time.Time `json:"ends_at"`
+	StartsAt time.Time
+	EndsAt   time.Time
 }
 
 type TaskWithDeadline struct {
 	BaseTask
-	Deadline time.Time `json:"deadline"`
+	Deadline time.Time
 }
 
 // For every `Loop` tasks those at places in Except are considered turned off
 type RepeatingTask struct {
 	Event
-	Period time.Time `json:"period"`
-	Loop   int       `json:"loop"`
-	Except []int     `json:"except"`
+	Period time.Time
+	Loop   int
+	Except []int
 }
