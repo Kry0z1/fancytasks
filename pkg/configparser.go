@@ -32,7 +32,7 @@ func (r RedisConfig) GetTimeLimit() time.Duration {
 var Cfg Config
 
 func init() {
-	file, err := os.Open("../config.yaml")
+	file, err := os.Open("config.yaml")
 	if err != nil {
 		log.Fatalf("Failed to find config file: %s", err.Error())
 	}

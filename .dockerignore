@@ -6,3 +6,4 @@ compose.yaml
 README.md
 data
 init.sql
+.dockerignore
