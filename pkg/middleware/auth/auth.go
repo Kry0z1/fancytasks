@@ -11,12 +11,12 @@ import (
 
 var contextUser struct{}
 
-func getPopulatedContextWithUser(ctx context.Context, user *tasks.UserStored) context.Context {
+func getPopulatedContextWithUser(ctx context.Context, user *tasks.User) context.Context {
 	return context.WithValue(ctx, &contextUser, user)
 }
 
-func ContextUser(ctx context.Context) *tasks.UserStored {
-	return ctx.Value(&contextUser).(*tasks.UserStored)
+func ContextUser(ctx context.Context) *tasks.User {
+	return ctx.Value(&contextUser).(*tasks.User)
 }
 
 func CheckAuth(t Tokenizer) func(http.Handler) http.Handler {

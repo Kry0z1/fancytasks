@@ -2,17 +2,8 @@ package tasks
 
 import "time"
 
-type UserBase struct {
-	Username string
-}
-
-type UserRegister struct {
-	UserBase
-	Password string
-}
-
-type UserStored struct {
-	UserBase
+type User struct {
+	Username          string
 	HashedPassword    string
 	Events            []Event
 	TasksWithDeadline []TaskWithDeadline
@@ -24,7 +15,7 @@ type BaseTask struct {
 	Title       string
 	Description string
 	Done        bool
-	Owner       UserBase
+	Owner       User
 }
 
 type Event struct {

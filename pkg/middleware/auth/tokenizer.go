@@ -14,7 +14,7 @@ var ErrInvalidToken error = errors.New("Invalid token")
 
 type Tokenizer interface {
 	CreateToken(map[string]any, time.Duration) (string, error)
-	CheckToken(context.Context, string) (*tasks.UserStored, error)
+	CheckToken(context.Context, string) (*tasks.User, error)
 }
 
 type jwtTokenizer struct {
@@ -33,7 +33,7 @@ func (j jwtTokenizer) CreateToken(data map[string]any, exp time.Duration) (strin
 	}).SignedString(j.secretKey)
 }
 
-func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.UserStored, error) {
+func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User, error) {
 	t, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
 		return j.secretKey, nil
 	})
@@ -53,7 +53,7 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 	}
 
 	// user, err := get user from db
-	var user *tasks.UserStored
+	var user *tasks.User
 
 	if err != nil {
 		return nil, ErrInvalidCred
