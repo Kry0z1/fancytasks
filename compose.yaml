@@ -8,6 +8,9 @@ services:
     environment:
       - REDIS_ADDR=redis:6379
       - REDIS_PASS=${REDIS_PASS}
+      - POSTGRES_PASS=${POSTGRES_PASS}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
     depends_on:
       - redis
       - postgresql
@@ -44,6 +47,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=${POSTGRES_PASS}
       - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
 
   pgadmin:
     image: dpage/pgadmin4
