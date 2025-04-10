@@ -14,8 +14,10 @@ var db *sql.DB
 func init() {
 	connStr := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"postgresql", 5432, "postgresql", os.Getenv("strong_postgres_pass"), "default",
+		"postgresql", 5432, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASS"), os.Getenv("POSTGRES_DB"),
 	)
+
+	fmt.Println(connStr)
 
 	var err error
 
