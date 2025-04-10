@@ -43,7 +43,8 @@ func Register(h tasks.Hasher) func(http.ResponseWriter, *http.Request) error {
 			}
 		}
 
-		dctx, _ := context.WithDeadline(r.Context(), time.Now().Add(time.Second))
+		dctx, cancel := context.WithDeadline(r.Context(), time.Now().Add(time.Second))
+		defer cancel()
 		_, err := database.CreateUser(dctx, username, password, h)
 
 		if err == database.ErrUserExists {

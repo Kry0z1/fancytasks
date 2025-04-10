@@ -18,7 +18,9 @@ func getPopulatedContextWithUser(ctx context.Context, user *tasks.User) context.
 }
 
 func CheckUser(ctx context.Context, username, password string, hasher tasks.Hasher) (*tasks.User, error) {
-	dctx, _ := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	dctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	defer cancel()
+
 	user, err := database.GetUserWithPassword(dctx, username)
 
 	if err != nil {

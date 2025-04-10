@@ -54,7 +54,8 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 		return nil, ErrInvalidCred
 	}
 
-	dctx, _ := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	dctx, cancel := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	defer cancel()
 	user, err := database.GetUserWithPassword(dctx, username)
 
 	if err != nil {

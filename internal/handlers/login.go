@@ -39,7 +39,8 @@ func LoginForToken(t auth.Tokenizer, h tasks.Hasher) func(http.ResponseWriter, *
 			}
 		}
 
-		dctx, _ := context.WithDeadline(r.Context(), time.Now().Add(time.Second))
+		dctx, cancel := context.WithDeadline(r.Context(), time.Now().Add(time.Second))
+		defer cancel()
 		_, err := auth.CheckUser(dctx, username, password, h)
 		if err == auth.ErrInvalidCred || err == sql.ErrNoRows {
 			return middleware.HTTPError{
