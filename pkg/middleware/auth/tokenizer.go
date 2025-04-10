@@ -2,10 +2,12 @@ package auth
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"time"
 
 	tasks "github.com/Kry0z1/fancytasks/pkg"
+	"github.com/Kry0z1/fancytasks/pkg/database"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -19,7 +21,7 @@ type Tokenizer interface {
 
 type jwtTokenizer struct {
 	expiresDelta time.Duration
-	secretKey    string
+	secretKey    []byte
 }
 
 func (j jwtTokenizer) CreateToken(data map[string]any, exp time.Duration) (string, error) {
@@ -52,8 +54,8 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 		return nil, ErrInvalidCred
 	}
 
-	// user, err := get user from db
-	var user *tasks.User
+	dctx, _ := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	user, err := database.GetUserWithPassword(dctx, username)
 
 	if err != nil {
 		return nil, ErrInvalidCred
@@ -61,9 +63,11 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 	return user, nil
 }
 
-func NewTokenizer(expiresDelta time.Duration, secretKey string) Tokenizer {
+func NewTokenizer(expiresDelta time.Duration, secretKey string) (Tokenizer, error) {
+	sk, err := hex.DecodeString(secretKey)
+
 	return jwtTokenizer{
 		expiresDelta: expiresDelta,
-		secretKey:    secretKey,
-	}
+		secretKey:    sk,
+	}, err
 }

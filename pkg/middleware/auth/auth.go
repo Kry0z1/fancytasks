@@ -5,14 +5,31 @@ import (
 	"errors"
 	"net/http"
 	"strings"
+	"time"
 
 	tasks "github.com/Kry0z1/fancytasks/pkg"
+	"github.com/Kry0z1/fancytasks/pkg/database"
 )
 
 var contextUser struct{}
 
 func getPopulatedContextWithUser(ctx context.Context, user *tasks.User) context.Context {
 	return context.WithValue(ctx, &contextUser, user)
+}
+
+func CheckUser(ctx context.Context, username, password string, hasher tasks.Hasher) (*tasks.User, error) {
+	dctx, _ := context.WithDeadline(ctx, time.Now().Add(time.Second))
+	user, err := database.GetUserWithPassword(dctx, username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !hasher.CheckPassword(password, user.HashedPassword) {
+		return nil, ErrInvalidCred
+	}
+
+	return user, nil
 }
 
 func ContextUser(ctx context.Context) *tasks.User {
