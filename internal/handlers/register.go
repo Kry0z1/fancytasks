@@ -46,7 +46,7 @@ func Register(w http.ResponseWriter, r *http.Request) error {
 
 	if err == database.ErrUserExists {
 		return middleware.HTTPError{
-			Err:     nil,
+			Err:     database.ErrUserExists,
 			Message: "Invalid password or username",
 			Code:    http.StatusUnauthorized,
 		}
