@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -13,7 +14,7 @@ type HTTPError struct {
 }
 
 func (he HTTPError) Error() string {
-	return fmt.Errorf("%w: %s", he.Err, he.Message).Error()
+	return fmt.Sprintf("%s: %s", he.Err.Error(), he.Message)
 }
 
 func ErrorMiddleware(next func(w http.ResponseWriter, r *http.Request) error) http.Handler {
@@ -24,11 +25,12 @@ func ErrorMiddleware(next func(w http.ResponseWriter, r *http.Request) error) ht
 			return
 		}
 
-		var he *HTTPError
+		var he HTTPError
 		if errors.As(err, &he) {
 			http.Error(w, he.Message, he.Code)
 		} else {
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			log.Printf("Internal server error: %s", err.Error())
 		}
 	})
 }
