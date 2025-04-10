@@ -38,7 +38,7 @@ func GetUserWithPassword(ctx context.Context, username string) (*tasks.User, err
 	var user tasks.User
 	err := db.QueryRowContext(
 		ctx,
-		`SELECT username, hashed_password FROM users WHERE id = $1`,
+		`SELECT username, hashed_password FROM users WHERE username = $1`,
 		username,
 	).Scan(&user.Username, &user.HashedPassword)
 	return &user, err
@@ -208,7 +208,7 @@ func GetUserRepeatingTasks(ctx context.Context, tx *sql.Tx, username string) ([]
 
 var ErrUserExists = errors.New("User with such username already exists")
 
-func CreateUser(ctx context.Context, username string, password string) (*tasks.User, error) {
+func CreateUser(ctx context.Context, username string, password string, h tasks.Hasher) (*tasks.User, error) {
 	var user tasks.User
 
 	tx, err := db.Begin()
@@ -229,7 +229,7 @@ func CreateUser(ctx context.Context, username string, password string) (*tasks.U
 		return nil, err
 	}
 
-	hashedPassword, err := tasks.NewHasher().HashPassword(password)
+	hashedPassword, err := h.HashPassword(password)
 	if err != nil {
 		return nil, err
 	}

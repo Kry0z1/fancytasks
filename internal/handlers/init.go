@@ -11,6 +11,7 @@ var (
 	paths = []string{
 		"index.html",
 		"register.html",
+		"login.html",
 	}
 )
 
