@@ -1,4 +1,4 @@
-package auth
+package tasks
 
 import "golang.org/x/crypto/bcrypt"
 
