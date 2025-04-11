@@ -14,8 +14,6 @@ import (
 )
 
 // TODO:
-// Сделать /me страницу
-// Сделать темплейт /me
 // Создать страницу создания таски
 // Создать страницу апдейта таски
 // Мигрировать дб (добавить поле isAdmin)
@@ -28,16 +26,16 @@ func main() {
 	}
 	h := tasks.NewHasher()
 
-	http.Handle("GET /", middleware.CollectErrorFunc(handlers.Index, middleware.Logger))
-	http.Handle("GET /register", middleware.CollectErrorFunc(handlers.RegisterPage, middleware.Logger))
-	http.Handle("POST /register", middleware.CollectErrorFunc(handlers.Register(h), middleware.Logger))
-	http.Handle("GET /login", middleware.CollectErrorFunc(handlers.LoginPage, middleware.Logger))
-	http.Handle("POST /login", middleware.CollectErrorFunc(handlers.LoginForToken(t, h), middleware.Logger))
-	http.Handle("GET /me", middleware.CollectErrorFunc(handlers.Me, auth.CheckAuth(t), middleware.Logger))
-	http.Handle("GET /secret", middleware.CollectErrorFunc(func(w http.ResponseWriter, r *http.Request) error {
+	http.Handle("GET /", middleware.LoggerErrorFunc(handlers.Index))
+	http.Handle("GET /register", middleware.LoggerErrorFunc(handlers.Index))
+	http.Handle("POST /register", middleware.LoggerErrorFunc(handlers.Register(h)))
+	http.Handle("GET /login", middleware.LoggerErrorFunc(handlers.LoginPage))
+	http.Handle("POST /login", middleware.LoggerErrorFunc(handlers.LoginForToken(t, h)))
+	http.Handle("GET /me", middleware.LoggerAuthErrorFunc(handlers.Me, t))
+	http.Handle("GET /secret", middleware.LoggerAuthErrorFunc(func(w http.ResponseWriter, r *http.Request) error {
 		w.Write([]byte("ok"))
 		return nil
-	}, auth.CheckAuth(t), middleware.Logger))
+	}, t))
 
 	fmt.Println("Listening on :8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))

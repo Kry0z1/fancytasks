@@ -1,6 +1,18 @@
 package middleware
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/Kry0z1/fancytasks/pkg/middleware/auth"
+)
+
+func LoggerAuthErrorFunc(f func(http.ResponseWriter, *http.Request) error, t auth.Tokenizer) http.Handler {
+	return CollectErrorFunc(f, auth.CheckAuth(t), Logger)
+}
+
+func LoggerErrorFunc(f func(http.ResponseWriter, *http.Request) error) http.Handler {
+	return CollectErrorFunc(f, Logger)
+}
 
 func CollectFunc(
 	f func(http.ResponseWriter, *http.Request),
