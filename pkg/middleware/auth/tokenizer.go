@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"time"
 
 	tasks "github.com/Kry0z1/fancytasks/pkg"
@@ -43,7 +42,6 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 	})
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, ErrInvalidToken
 	}
 

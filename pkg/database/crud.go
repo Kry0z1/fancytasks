@@ -8,6 +8,29 @@ import (
 	tasks "github.com/Kry0z1/fancytasks/pkg"
 )
 
+func DecorateGetWithTx[T any, V any, E ~[]T | *T](
+	ctx context.Context,
+	f func(context.Context, *sql.Tx, V) (E, error),
+	arg V,
+) (E, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	result, err := f(ctx, tx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func GetUser(ctx context.Context, username string) (*tasks.User, error) {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -25,6 +48,7 @@ func GetUser(ctx context.Context, username string) (*tasks.User, error) {
 		return nil, err
 	}
 
+	user.Username = username
 	user.HashedPassword = userPass.HashedPassword
 
 	if err := tx.Commit(); err != nil {
@@ -45,44 +69,31 @@ func GetUserWithPassword(ctx context.Context, username string) (*tasks.User, err
 }
 
 func GetUserWithTasks(ctx context.Context, username string) (*tasks.User, error) {
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	result, err := GetUserWithTasksTx(ctx, tx, username)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return DecorateGetWithTx[tasks.User](ctx, GetUserWithTasksTx, username)
 }
 
 func GetUserWithTasksTx(ctx context.Context, tx *sql.Tx, username string) (*tasks.User, error) {
 	var user tasks.User
 	var err error
 
-	user.BaseTasks, err = GetUserBaseTasks(ctx, tx, username)
+	user.Username = username
+
+	user.BaseTasks, err = GetUserBaseTasksTx(ctx, tx, username)
 	if err != nil {
 		return nil, err
 	}
 
-	user.Events, err = GetUserEvents(ctx, tx, username)
+	user.Events, err = GetUserEventsTx(ctx, tx, username)
 	if err != nil {
 		return nil, err
 	}
 
-	user.TasksWithDeadline, err = GetUserTasksWithDeadline(ctx, tx, username)
+	user.TasksWithDeadline, err = GetUserTasksWithDeadlineTx(ctx, tx, username)
 	if err != nil {
 		return nil, err
 	}
 
-	user.RepeatingTasks, err = GetUserRepeatingTasks(ctx, tx, username)
+	user.RepeatingTasks, err = GetUserRepeatingTasksTx(ctx, tx, username)
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +101,12 @@ func GetUserWithTasksTx(ctx context.Context, tx *sql.Tx, username string) (*task
 	return &user, nil
 }
 
+func GetUserBaseTasks(ctx context.Context, username string) ([]tasks.BaseTask, error) {
+	return DecorateGetWithTx[tasks.BaseTask](ctx, GetUserBaseTasksTx, username)
+}
+
 // User is responsible for creating and commiting/rollbacking transaction
-func GetUserBaseTasks(ctx context.Context, tx *sql.Tx, username string) ([]tasks.BaseTask, error) {
+func GetUserBaseTasksTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.BaseTask, error) {
 	var result []tasks.BaseTask
 
 	rows, err := tx.QueryContext(
@@ -119,8 +134,12 @@ func GetUserBaseTasks(ctx context.Context, tx *sql.Tx, username string) ([]tasks
 	return result, nil
 }
 
+func GetUserEvents(ctx context.Context, username string) ([]tasks.Event, error) {
+	return DecorateGetWithTx[tasks.Event](ctx, GetUserEventsTx, username)
+}
+
 // User is responsible for creating and commiting/rollbacking transaction
-func GetUserEvents(ctx context.Context, tx *sql.Tx, username string) ([]tasks.Event, error) {
+func GetUserEventsTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.Event, error) {
 	var result []tasks.Event
 
 	rows, err := tx.QueryContext(
@@ -148,8 +167,12 @@ func GetUserEvents(ctx context.Context, tx *sql.Tx, username string) ([]tasks.Ev
 	return result, nil
 }
 
+func GetUserTasksWithDeadline(ctx context.Context, username string) ([]tasks.TaskWithDeadline, error) {
+	return DecorateGetWithTx[tasks.TaskWithDeadline](ctx, GetUserTasksWithDeadlineTx, username)
+}
+
 // User is responsible for creating and commiting/rollbacking transaction
-func GetUserTasksWithDeadline(ctx context.Context, tx *sql.Tx, username string) ([]tasks.TaskWithDeadline, error) {
+func GetUserTasksWithDeadlineTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.TaskWithDeadline, error) {
 	var result []tasks.TaskWithDeadline
 
 	rows, err := tx.QueryContext(
@@ -177,8 +200,12 @@ func GetUserTasksWithDeadline(ctx context.Context, tx *sql.Tx, username string) 
 	return result, nil
 }
 
+func GetUserRepeatingTasks(ctx context.Context, username string) ([]tasks.RepeatingTask, error) {
+	return DecorateGetWithTx[tasks.RepeatingTask](ctx, GetUserRepeatingTasksTx, username)
+}
+
 // User is responsible for creating and commiting/rollbacking transaction
-func GetUserRepeatingTasks(ctx context.Context, tx *sql.Tx, username string) ([]tasks.RepeatingTask, error) {
+func GetUserRepeatingTasksTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.RepeatingTask, error) {
 	var result []tasks.RepeatingTask
 
 	rows, err := tx.QueryContext(
