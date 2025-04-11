@@ -14,19 +14,19 @@ type Config struct {
 }
 
 type JWTConfig struct {
-	expiresDelta int `yaml:"expires_delta"`
+	ExpiresDelta int `yaml:"expires_delta"`
 }
 
 func (j JWTConfig) GetExpiresDelta() time.Duration {
-	return time.Minute * time.Duration(j.expiresDelta)
+	return time.Duration(j.ExpiresDelta) * time.Minute
 }
 
 type RedisConfig struct {
-	getTimeLimit int `yaml:"get_time_limit"`
+	GetTimeLimit int `yaml:"get_time_limit"`
 }
 
-func (r RedisConfig) GetTimeLimit() time.Duration {
-	return time.Millisecond * time.Duration(r.getTimeLimit)
+func (r RedisConfig) GetTimeLimitInMilliseconds() time.Duration {
+	return time.Duration(r.GetTimeLimit) * time.Millisecond
 }
 
 var Cfg Config
