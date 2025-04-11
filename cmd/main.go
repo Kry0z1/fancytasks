@@ -13,6 +13,15 @@ import (
 	"github.com/Kry0z1/fancytasks/pkg/middleware/auth"
 )
 
+// TODO:
+// Сделать /me страницу
+// Токен получить через /me/token через форму
+// Сделать темплейт /me
+// Создать страницу создания таски
+// Создать страницу апдейта таски
+// Мигрировать дб (добавить поле isAdmin)
+// Сделать кэширование запросов с помощью redis
+
 func main() {
 	t, err := auth.NewTokenizer(tasks.Cfg.JWT.GetExpiresDelta(), os.Getenv("JWT_SECRET_KEY"))
 	if err != nil {
@@ -28,7 +37,7 @@ func main() {
 	http.Handle("GET /secret", middleware.CollectErrorFunc(func(w http.ResponseWriter, r *http.Request) error {
 		w.Write([]byte("ok"))
 		return nil
-	}, middleware.Logger, auth.CheckAuth(t)))
+	}, auth.CheckAuth(t), middleware.Logger))
 
 	fmt.Println("Listening on :8000")
 	log.Fatal(http.ListenAndServe(":8000", nil))

@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"net/http"
 	"time"
 
@@ -61,9 +62,10 @@ func LoginForToken(t auth.Tokenizer, h tasks.Hasher) func(http.ResponseWriter, *
 			return err
 		}
 
-		w.Write([]byte(token))
-
-		return nil
+		return json.NewEncoder(w).Encode(map[string]string{
+			"token_type":   "Bearer",
+			"access_token": token,
+		})
 	}
 }
 
