@@ -18,19 +18,8 @@ func LoginForToken(t auth.Tokenizer, h tasks.Hasher) func(http.ResponseWriter, *
 			return err
 		}
 
-		usernameSlice := r.Form["username"]
-		passwordSlice := r.Form["password"]
-
-		if len(usernameSlice) == 0 || len(passwordSlice) == 0 {
-			return middleware.HTTPError{
-				Err:     nil,
-				Message: "Missing password or username",
-				Code:    http.StatusNotFound,
-			}
-		}
-
-		username := usernameSlice[0]
-		password := passwordSlice[0]
+		username := r.FormValue("username")
+		password := r.FormValue("password")
 
 		if username == "" || password == "" {
 			return middleware.HTTPError{

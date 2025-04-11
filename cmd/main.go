@@ -15,7 +15,6 @@ import (
 
 // TODO:
 // Сделать /me страницу
-// Токен получить через /me/token через форму
 // Сделать темплейт /me
 // Создать страницу создания таски
 // Создать страницу апдейта таски
@@ -34,6 +33,7 @@ func main() {
 	http.Handle("POST /register", middleware.CollectErrorFunc(handlers.Register(h), middleware.Logger))
 	http.Handle("GET /login", middleware.CollectErrorFunc(handlers.LoginPage, middleware.Logger))
 	http.Handle("POST /login", middleware.CollectErrorFunc(handlers.LoginForToken(t, h), middleware.Logger))
+	http.Handle("GET /me", middleware.CollectErrorFunc(handlers.Me, auth.CheckAuth(t), middleware.Logger))
 	http.Handle("GET /secret", middleware.CollectErrorFunc(func(w http.ResponseWriter, r *http.Request) error {
 		w.Write([]byte("ok"))
 		return nil
