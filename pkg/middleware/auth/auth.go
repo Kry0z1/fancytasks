@@ -42,17 +42,18 @@ func CheckAuth(t Tokenizer) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("WWW-Authenticate", "Bearer")
-			authorizationHeader := w.Header().Get("Authorization")
-			if authorizationHeader == "" {
+			authorizationHeaderArr := r.Header["Authorization"]
+			if len(authorizationHeaderArr) == 0 {
 				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Missing Authorization header"))
+				w.Write([]byte("Missing authorization header"))
 				return
 			}
+			authorizationHeader := authorizationHeaderArr[0]
 
 			splitted := strings.Split(authorizationHeader, " ")
 			if len(splitted) != 2 || splitted[0] != "Bearer" {
 				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Invalid Authorization header format"))
+				w.Write([]byte("Invalid authorization header format"))
 				return
 			}
 

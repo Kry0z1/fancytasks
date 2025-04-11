@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"database/sql"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"time"
 
 	tasks "github.com/Kry0z1/fancytasks/pkg"
@@ -41,6 +43,7 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 	})
 
 	if err != nil {
+		fmt.Println(err)
 		return nil, ErrInvalidToken
 	}
 
@@ -58,9 +61,13 @@ func (j jwtTokenizer) CheckToken(ctx context.Context, token string) (*tasks.User
 	defer cancel()
 	user, err := database.GetUserWithPassword(dctx, username)
 
-	if err != nil {
+	if err == sql.ErrNoRows {
 		return nil, ErrInvalidCred
 	}
+	if err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
