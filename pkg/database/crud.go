@@ -63,7 +63,12 @@ func GetUserWithPassword(ctx context.Context, username string) (*tasks.User, err
 	var user tasks.User
 	err := db.QueryRowContext(
 		ctx,
-		`SELECT username, hashed_password FROM users WHERE username = $1`,
+		`SELECT 
+			username, hashed_password 
+		FROM 
+			users 
+		WHERE 
+			username = $1`,
 		username,
 	).Scan(&user.Username, &user.HashedPassword)
 	return &user, err
@@ -112,7 +117,12 @@ func GetUserBaseTasksTx(ctx context.Context, tx *sql.Tx, username string) ([]tas
 
 	rows, err := tx.QueryContext(
 		ctx,
-		"SELECT * FROM base_tasks WHERE owner = $1",
+		`SELECT 
+			id, title, description, done, owner 
+		FROM 
+			base_tasks 
+		WHERE 
+			owner = $1`,
 		username,
 	)
 	if err != nil {
@@ -145,7 +155,12 @@ func GetUserEventsTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.
 
 	rows, err := tx.QueryContext(
 		ctx,
-		"SELECT * FROM events WHERE owner = $1",
+		`SELECT 
+			id, title, description, done, owner, starts_at, ends_at
+		FROM 
+			events 
+		WHERE 
+			owner = $1`,
 		username,
 	)
 	if err != nil {
@@ -178,7 +193,12 @@ func GetUserTasksWithDeadlineTx(ctx context.Context, tx *sql.Tx, username string
 
 	rows, err := tx.QueryContext(
 		ctx,
-		"SELECT * FROM tasks_with_deadline WHERE owner = $1",
+		`SELECT 
+			id, title, description, done, owner, deadline
+		FROM 
+			tasks_with_deadline 
+		WHERE 
+			owner = $1`,
 		username,
 	)
 	if err != nil {
@@ -211,7 +231,13 @@ func GetUserRepeatingTasksTx(ctx context.Context, tx *sql.Tx, username string) (
 
 	rows, err := tx.QueryContext(
 		ctx,
-		"SELECT * FROM repeating_tasks WHERE owner = $1",
+		`SELECT 
+			id, title, description, done, owner,
+			starts_at, ends_at, period, loop, excepts
+		FROM 
+			repeating_tasks 
+		WHERE 
+			owner = $1`,
 		username,
 	)
 	if err != nil {
@@ -247,7 +273,12 @@ func CreateUser(ctx context.Context, username string, password string, h tasks.H
 
 	err = tx.QueryRowContext(
 		ctx,
-		"SELECT username FROM users WHERE username = $1",
+		`SELECT 
+			username 
+		FROM 
+			users 
+		WHERE 
+			username = $1`,
 		username,
 	).Scan(&user.Username)
 	if err == nil {
@@ -264,7 +295,10 @@ func CreateUser(ctx context.Context, username string, password string, h tasks.H
 
 	_, err = tx.ExecContext(
 		ctx,
-		"INSERT INTO users(username, hashed_password) VALUES ($1, $2)",
+		`INSERT INTO 
+			users(username, hashed_password) 
+		VALUES 
+			($1, $2)`,
 		username, hashedPassword,
 	)
 	if err != nil {
@@ -284,7 +318,10 @@ func CreateUser(ctx context.Context, username string, password string, h tasks.H
 func CreateBaseTask(ctx context.Context, task *tasks.BaseTask) error {
 	res, err := db.ExecContext(
 		ctx,
-		"INSERT INTO base_tasks(title, description, done, owner) VALUES ($1, $2, $3, $4)",
+		`INSERT INTO 
+			base_tasks(title, description, done, owner)
+		VALUES 
+			($1, $2, $3, $4)`,
 		task.Title, task.Description, task.Done, task.Owner,
 	)
 
@@ -301,8 +338,10 @@ func CreateBaseTask(ctx context.Context, task *tasks.BaseTask) error {
 func CreateEvent(ctx context.Context, task *tasks.Event) error {
 	res, err := db.ExecContext(
 		ctx,
-		`INSERT INTO events(title, description, done, owner, starts_at, ends_at) 
-		VALUES ($1, $2, $3, $4, $5, $6)`,
+		`INSERT INTO 
+			events(title, description, done, owner, starts_at, ends_at) 
+		VALUES 
+			($1, $2, $3, $4, $5, $6)`,
 		task.Title, task.Description, task.Done, task.Owner, task.StartsAt, task.EndsAt,
 	)
 
@@ -319,8 +358,10 @@ func CreateEvent(ctx context.Context, task *tasks.Event) error {
 func CreateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) error {
 	res, err := db.ExecContext(
 		ctx,
-		`INSERT INTO tasks_with_deadline(title, description, done, owner, deadline) 
-		VALUES ($1, $2, $3, $4, $5)`,
+		`INSERT INTO 
+			tasks_with_deadline(title, description, done, owner, deadline) 
+		VALUES 
+			($1, $2, $3, $4, $5)`,
 		task.Title, task.Description, task.Done, task.Owner, task.Deadline,
 	)
 
@@ -337,8 +378,10 @@ func CreateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) e
 func CreateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) error {
 	res, err := db.ExecContext(
 		ctx,
-		`INSERT INTO repeating_tasks(title, description, done, owner, starts_at, ends_at, period, loop, excepts) 
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+		`INSERT INTO 
+			repeating_tasks(title, description, done, owner, starts_at, ends_at, period, loop, excepts) 
+		VALUES 
+			($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
 		task.Title, task.Description, task.Done, task.Owner, task.StartsAt, task.EndsAt, task.Period, task.Loop, pq.Array(task.Except),
 	)
 
@@ -364,7 +407,13 @@ func UpdateBaseTask(ctx context.Context, task *tasks.BaseTask) (func(context.Con
 
 	err = tx.QueryRowContext(
 		ctx,
-		`SELECT title, description, done, owner FROM base_tasks WHERE id = $1 FOR UPDATE`,
+		`SELECT 
+			title, description, done, owner 
+		FROM 
+			base_tasks 
+		WHERE 
+			id = $1 
+		FOR UPDATE`,
 		task.ID,
 	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner)
 
@@ -378,8 +427,12 @@ func UpdateBaseTask(ctx context.Context, task *tasks.BaseTask) (func(context.Con
 
 		_, err := tx.ExecContext(
 			ctx,
-			`UPDATE base_tasks SET title=$1,description=$2,done=$3,owner=$4
-			 WHERE id=$5`,
+			`UPDATE 
+				base_tasks 
+			SET 
+				title=$1,description=$2,done=$3,owner=$4
+			WHERE 
+				id=$5`,
 			task.Title, task.Description, task.Done, task.Owner, task.ID,
 		)
 
@@ -405,7 +458,13 @@ func UpdateEvent(ctx context.Context, task *tasks.Event) (func(context.Context) 
 
 	err = tx.QueryRowContext(
 		ctx,
-		`SELECT title, description, done, owner, starts_at, ends_at FROM events WHERE id = $1 FOR UPDATE`,
+		`SELECT 
+			title, description, done, owner, starts_at, ends_at 
+		FROM 
+			events 
+		WHERE 
+			id = $1 
+		FOR UPDATE`,
 		task.ID,
 	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.StartsAt, &task.EndsAt)
 
@@ -419,8 +478,12 @@ func UpdateEvent(ctx context.Context, task *tasks.Event) (func(context.Context) 
 
 		_, err := tx.ExecContext(
 			ctx,
-			`UPDATE events SET title=$1,description=$2,done=$3,owner=$4,starts_at=$5,ends_at=$6
-			 WHERE id=$7`,
+			`UPDATE 
+				events 
+			SET 
+				title=$1,description=$2,done=$3,owner=$4,starts_at=$5,ends_at=$6
+			WHERE 
+				id=$7`,
 			task.Title, task.Description, task.Done, task.Owner, task.StartsAt, task.EndsAt, task.ID,
 		)
 
@@ -446,7 +509,13 @@ func UpdateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) (
 
 	err = tx.QueryRowContext(
 		ctx,
-		`SELECT title, description, done, owner, deadline FROM tasks_with_deadline WHERE id = $1 FOR UPDATE`,
+		`SELECT 
+			title, description, done, owner, deadline 
+		FROM 
+			tasks_with_deadline 
+		WHERE 
+			id = $1 
+		FOR UPDATE`,
 		task.ID,
 	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.Deadline)
 
@@ -460,8 +529,12 @@ func UpdateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) (
 
 		_, err := tx.ExecContext(
 			ctx,
-			`UPDATE tasks_with_deadline SET title=$1,description=$2,done=$3,owner=$4,deadline=$5
-			 WHERE id=$6`,
+			`UPDATE 
+				tasks_with_deadline 
+			SET 
+				title=$1,description=$2,done=$3,owner=$4,deadline=$5
+			WHERE 
+				id=$6`,
 			task.Title, task.Description, task.Done, task.Owner, task.Deadline, task.ID,
 		)
 
@@ -487,8 +560,13 @@ func UpdateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) (func(c
 
 	err = tx.QueryRowContext(
 		ctx,
-		`SELECT title, description, done, owner, starts_at, ends_at, period, loop, excepts 
-		FROM repeating_tasks WHERE id = $1 FOR UPDATE`,
+		`SELECT 
+			title, description, done, owner, starts_at, ends_at, period, loop, excepts 
+		FROM 
+			repeating_tasks 
+		WHERE 
+			id = $1 
+		FOR UPDATE`,
 		task.ID,
 	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner,
 		&task.StartsAt, &task.EndsAt, &task.Period, &task.Loop, pq.Array(&task.Except))
@@ -503,9 +581,13 @@ func UpdateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) (func(c
 
 		_, err := tx.ExecContext(
 			ctx,
-			`UPDATE repeating_tasks SET title=$1,description=$2,done=$3,owner=$4,starts_at=$5,
-			ends_at=$6,period=$7,loop=$8,excepts=$9
-			 WHERE id=$10`,
+			`UPDATE 
+				repeating_tasks
+			SET 
+				title=$1,description=$2,done=$3,owner=$4,starts_at=$5,
+				ends_at=$6,period=$7,loop=$8,excepts=$9
+			WHERE 
+				id=$10`,
 			task.Title, task.Description, task.Done, task.Owner, task.StartsAt,
 			task.EndsAt, task.Period, task.Loop, pq.Array(task.Except), task.ID,
 		)
