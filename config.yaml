@@ -1,5 +1,5 @@
 jwt:
-  expires_delta: 15 # in minutes
+  expires_delta: 10000 # in minutes
 
 redis:
   get_time_limit: 1000 # in milliseconds

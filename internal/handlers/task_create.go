@@ -109,6 +109,14 @@ func createEvent(w http.ResponseWriter, r *http.Request, t *tasks.BaseTask) erro
 		}
 	}
 
+	if endsUnix < 0 || startsUnix < 0 {
+		return middleware.HTTPError{
+			Err:     err,
+			Message: "Timestamps cannot be less than 0",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
 	result := tasks.Event{
 		BaseTask: *t,
 		StartsAt: time.Unix(startsUnix, 0),
@@ -130,6 +138,14 @@ func createDeadline(w http.ResponseWriter, r *http.Request, t *tasks.BaseTask) e
 		return middleware.HTTPError{
 			Err:     err,
 			Message: "Invalid deadline",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
+	if deadline < 0 {
+		return middleware.HTTPError{
+			Err:     err,
+			Message: "Timestamps cannot be less than 0",
 			Code:    http.StatusBadRequest,
 		}
 	}
@@ -178,6 +194,22 @@ func createRepeatingTask(w http.ResponseWriter, r *http.Request, t *tasks.BaseTa
 		return middleware.HTTPError{
 			Err:     err,
 			Message: "Invalid loop",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
+	if endsUnix < startsUnix {
+		return middleware.HTTPError{
+			Err:     err,
+			Message: "End as earlier than start",
+			Code:    http.StatusBadRequest,
+		}
+	}
+
+	if endsUnix < 0 || startsUnix < 0 {
+		return middleware.HTTPError{
+			Err:     err,
+			Message: "Timestamps cannot be less than 0",
 			Code:    http.StatusBadRequest,
 		}
 	}
