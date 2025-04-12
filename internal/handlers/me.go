@@ -40,7 +40,7 @@ func Me(w http.ResponseWriter, r *http.Request) error {
 		userDB.Events, err = database.GetUserEvents(dctx, user.Username)
 		found = true
 	}
-	if slices.Contains(filter, "repeating") {
+	if slices.Contains(filter, "repeat") {
 		userDB.RepeatingTasks, err = database.GetUserRepeatingTasks(dctx, user.Username)
 		found = true
 	}
