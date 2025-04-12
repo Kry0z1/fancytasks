@@ -25,10 +25,7 @@ func main() {
 	}
 	h := tasks.NewHasher()
 
-	http.Handle("GET /", middleware.LoggerErrorFunc(handlers.Index))
-	http.Handle("GET /register", middleware.LoggerErrorFunc(handlers.Index))
 	http.Handle("POST /register", middleware.LoggerErrorFunc(handlers.Register(h)))
-	http.Handle("GET /login", middleware.LoggerErrorFunc(handlers.LoginPage))
 	http.Handle("POST /login", middleware.LoggerErrorFunc(handlers.LoginForToken(t, h)))
 	http.Handle("GET /me", middleware.LoggerAuthErrorFunc(handlers.Me, t))
 	http.Handle("POST /tasks/create", middleware.LoggerAuthErrorFunc(handlers.CreateTask, t))

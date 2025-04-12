@@ -57,8 +57,3 @@ func LoginForToken(t auth.Tokenizer, h tasks.Hasher) func(http.ResponseWriter, *
 		})
 	}
 }
-
-func LoginPage(w http.ResponseWriter, r *http.Request) error {
-	w.Write(tmpls["login.html"])
-	return nil
-}

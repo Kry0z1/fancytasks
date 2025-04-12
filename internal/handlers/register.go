@@ -10,11 +10,6 @@ import (
 	"github.com/Kry0z1/fancytasks/pkg/middleware"
 )
 
-func RegisterPage(w http.ResponseWriter, r *http.Request) error {
-	w.Write(tmpls["register.html"])
-	return nil
-}
-
 func Register(h tasks.Hasher) func(http.ResponseWriter, *http.Request) error {
 	return func(w http.ResponseWriter, r *http.Request) error {
 		if err := r.ParseForm(); err != nil {
