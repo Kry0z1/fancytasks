@@ -32,6 +32,7 @@ func main() {
 	http.Handle("GET /login", middleware.LoggerErrorFunc(handlers.LoginPage))
 	http.Handle("POST /login", middleware.LoggerErrorFunc(handlers.LoginForToken(t, h)))
 	http.Handle("GET /me", middleware.LoggerAuthErrorFunc(handlers.Me, t))
+	http.Handle("POST /tasks/create", middleware.LoggerAuthErrorFunc(handlers.CreateTask, t))
 	http.Handle("GET /secret", middleware.LoggerAuthErrorFunc(func(w http.ResponseWriter, r *http.Request) error {
 		w.Write([]byte("ok"))
 		return nil

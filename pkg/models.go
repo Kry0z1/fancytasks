@@ -14,9 +14,9 @@ type User struct {
 type BaseTask struct {
 	ID          int    `json:"id"`
 	Title       string `json:"title"`
-	Description string `json:"desciption"`
+	Description string `json:"description"`
 	Done        bool   `json:"done"`
-	Owner       User   `json:"owner"`
+	Owner       string `json:"owner"`
 }
 
 type Event struct {
@@ -33,7 +33,7 @@ type TaskWithDeadline struct {
 // For every `Loop` tasks those at places in Except are considered turned off
 type RepeatingTask struct {
 	Event
-	Period time.Duration `json:"period"`
-	Loop   int           `json:"loop"`
-	Except []int         `json:"except"`
+	Period int64   `json:"period"`
+	Loop   int64   `json:"loop"`
+	Except []int64 `json:"except"`
 }
