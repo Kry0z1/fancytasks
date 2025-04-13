@@ -14,6 +14,7 @@ import (
 )
 
 // TODO:
+// Добавить удаление тасок
 // Добавить разделение тасок на топики
 // Мигрировать дб (добавить поле isAdmin)
 // Сделать кэширование запросов с помощью redis
@@ -27,7 +28,7 @@ func main() {
 
 	http.Handle("POST /register", middleware.LoggerErrorFunc(handlers.Register(h)))
 	http.Handle("POST /login", middleware.LoggerErrorFunc(handlers.LoginForToken(t, h)))
-	http.Handle("GET /me", middleware.LoggerAuthErrorFunc(handlers.Me, t))
+	http.Handle("GET /tasks", middleware.LoggerAuthErrorFunc(handlers.Me, t))
 	http.Handle("POST /tasks/create", middleware.LoggerAuthErrorFunc(handlers.CreateTask, t))
 	http.Handle("POST /tasks/update", middleware.LoggerAuthErrorFunc(handlers.UpdateTask, t))
 	http.Handle("GET /secret", middleware.LoggerAuthErrorFunc(func(w http.ResponseWriter, r *http.Request) error {

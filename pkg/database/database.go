@@ -1,6 +1,7 @@
 package database
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -29,4 +30,27 @@ func init() {
 
 func GetDB() *sql.DB {
 	return db
+}
+
+func DecorateGetWithTx[T any, V any, E ~[]T | *T](
+	ctx context.Context,
+	f func(context.Context, *sql.Tx, V) (E, error),
+	arg V,
+) (E, error) {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	result, err := f(ctx, tx, arg)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }
