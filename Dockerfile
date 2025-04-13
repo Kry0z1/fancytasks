@@ -11,7 +11,6 @@ RUN go mod download
 COPY cmd ./cmd
 COPY internal ./internal
 COPY pkg ./pkg
-COPY static ./static
 RUN go build -v -o ./main ./cmd
 
 COPY config.yaml ./
