@@ -7,14 +7,13 @@ import (
 	"os"
 
 	"github.com/Kry0z1/fancytasks/internal/handlers"
+	"github.com/Kry0z1/fancytasks/internal/middleware"
+	"github.com/Kry0z1/fancytasks/internal/middleware/auth"
 	_ "github.com/Kry0z1/fancytasks/internal/redis"
 	tasks "github.com/Kry0z1/fancytasks/pkg"
-	"github.com/Kry0z1/fancytasks/pkg/middleware"
-	"github.com/Kry0z1/fancytasks/pkg/middleware/auth"
 )
 
 // TODO:
-// Добавить разделение тасок на топики
 // Сделать кэширование запросов с помощью redis
 
 func main() {

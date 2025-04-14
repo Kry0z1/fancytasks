@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Kry0z1/fancytasks/internal/middleware"
+	"github.com/Kry0z1/fancytasks/internal/middleware/auth"
 	tasks "github.com/Kry0z1/fancytasks/pkg"
 	"github.com/Kry0z1/fancytasks/pkg/database"
-	"github.com/Kry0z1/fancytasks/pkg/middleware"
-	"github.com/Kry0z1/fancytasks/pkg/middleware/auth"
 )
 
 func UpdateTask(w http.ResponseWriter, r *http.Request) error {

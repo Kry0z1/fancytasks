@@ -21,3 +21,11 @@ func init() {
 		log.Fatal("Failed to connect to redis:", err.Error())
 	}
 }
+
+func Get(ctx context.Context, token string, query string) (string, error) {
+	return rc.Get(ctx, token+"@"+query).Result()
+}
+
+func Set(ctx context.Context, token string, query string, value string) error {
+	return rc.Set(ctx, token+"@"+query, value, 0).Err()
+}

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Kry0z1/fancytasks/internal/middleware"
 	tasks "github.com/Kry0z1/fancytasks/pkg"
 	"github.com/Kry0z1/fancytasks/pkg/database"
-	"github.com/Kry0z1/fancytasks/pkg/middleware"
 )
 
 func Register(h tasks.Hasher) func(http.ResponseWriter, *http.Request) error {
