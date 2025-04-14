@@ -61,7 +61,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) error {
 		var task tasks.BaseTask
 		baseTask = &task
 		update = func() (func(context.Context) error, error) { return database.UpdateBaseTask(dctx, &task) }
-		parse = func() error { return parseBaseTask(r, &task) }
+		parse = func() error { return nil }
 		send = func() error { return json.NewEncoder(w).Encode(&task) }
 	case "event":
 		var task tasks.Event
@@ -111,6 +111,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) error {
 		}
 	}
 
+	parseBaseTask(r, baseTask)
 	if err = parse(); err != nil {
 		callback(dctx)
 		return err
@@ -122,7 +123,7 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) error {
 	return send()
 }
 
-func parseBaseTask(r *http.Request, task *tasks.BaseTask) error {
+func parseBaseTask(r *http.Request, task *tasks.BaseTask) {
 	if r.Form.Has("title") && r.Form.Get("title") != "" {
 		task.Title = r.Form.Get("title")
 	}
@@ -135,7 +136,9 @@ func parseBaseTask(r *http.Request, task *tasks.BaseTask) error {
 		task.Done = r.Form.Get("done") == "true"
 	}
 
-	return nil
+	if r.Form.Has("topic") {
+		task.Topic = r.Form.Get("topic")
+	}
 }
 
 func parseEvent(r *http.Request, t *tasks.Event) error {

@@ -77,6 +77,10 @@ func createBaseTask(r *http.Request) (*tasks.BaseTask, error) {
 
 	task.Description = r.Form.Get("description")
 	task.Owner = auth.ContextUser(r.Context()).Username
+	task.Topic = r.Form.Get("topic")
+	if task.Topic == "" {
+		task.Topic = "default"
+	}
 
 	return &task, nil
 }

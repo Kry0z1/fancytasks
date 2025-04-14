@@ -15,9 +15,9 @@ func DeleteBaseTask(ctx context.Context, task *tasks.BaseTask) error {
 		WHERE
 			id = $1
 		RETURNING
-			id, title, description, done, owner`,
+			id, title, description, done, owner, topic`,
 		task.ID,
-	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner)
+	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner, &task.Topic)
 }
 
 func DeleteEvent(ctx context.Context, task *tasks.Event) error {
@@ -28,10 +28,10 @@ func DeleteEvent(ctx context.Context, task *tasks.Event) error {
 		WHERE
 			id = $1
 		RETURNING
-			id, title, description, done, owner, starts_at, ends_at`,
+			id, title, description, done, owner, starts_at, ends_at, topic`,
 		task.ID,
 	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner,
-		&task.StartsAt, &task.EndsAt)
+		&task.StartsAt, &task.EndsAt, &task.Topic)
 }
 
 func DeleteTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) error {
@@ -42,9 +42,9 @@ func DeleteTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) e
 		WHERE
 			id = $1
 		RETURNING
-			id, title, description, done, owner, deadline`,
+			id, title, description, done, owner, deadline, topic`,
 		task.ID,
-	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner, &task.Deadline)
+	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner, &task.Deadline, &task.Topic)
 }
 
 func DeleteRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) error {
@@ -55,8 +55,8 @@ func DeleteRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) error {
 		WHERE
 			id = $1
 		RETURNING
-			id, title, description, done, owner, starts_at, ends_at, period, loop, excepts`,
+			id, title, description, done, owner, starts_at, ends_at, period, loop, excepts, topic`,
 		task.ID,
 	).Scan(&task.ID, &task.Title, &task.Description, &task.Done, &task.Owner,
-		&task.StartsAt, &task.EndsAt, &task.Period, &task.Loop, pq.Array(&task.Except))
+		&task.StartsAt, &task.EndsAt, &task.Period, &task.Loop, pq.Array(&task.Except), &task.Topic)
 }

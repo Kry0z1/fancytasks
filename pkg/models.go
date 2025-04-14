@@ -17,6 +17,7 @@ type BaseTask struct {
 	Description string `json:"description"`
 	Done        bool   `json:"done"`
 	Owner       string `json:"owner"`
+	Topic       string `json:"topic"`
 }
 
 type Event struct {

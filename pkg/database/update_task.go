@@ -20,14 +20,14 @@ func UpdateBaseTask(ctx context.Context, task *tasks.BaseTask) (func(context.Con
 	err = tx.QueryRowContext(
 		ctx,
 		`SELECT 
-			title, description, done, owner 
+			title, description, done, owner, topic
 		FROM 
 			base_tasks 
 		WHERE 
 			id = $1 
 		FOR UPDATE`,
 		task.ID,
-	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner)
+	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.Topic)
 
 	if err != nil {
 		tx.Rollback()
@@ -42,10 +42,10 @@ func UpdateBaseTask(ctx context.Context, task *tasks.BaseTask) (func(context.Con
 			`UPDATE 
 				base_tasks 
 			SET 
-				title=$1,description=$2,done=$3,owner=$4
+				title=$1,description=$2,done=$3,owner=$4,topic=$6
 			WHERE 
 				id=$5`,
-			task.Title, task.Description, task.Done, task.Owner, task.ID,
+			task.Title, task.Description, task.Done, task.Owner, task.ID, task.Topic,
 		)
 
 		if err != nil {
@@ -71,14 +71,14 @@ func UpdateEvent(ctx context.Context, task *tasks.Event) (func(context.Context) 
 	err = tx.QueryRowContext(
 		ctx,
 		`SELECT 
-			title, description, done, owner, starts_at, ends_at 
+			title, description, done, owner, starts_at, ends_at, topic
 		FROM 
 			events 
 		WHERE 
 			id = $1 
 		FOR UPDATE`,
 		task.ID,
-	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.StartsAt, &task.EndsAt)
+	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.StartsAt, &task.EndsAt, &task.Topic)
 
 	if err != nil {
 		tx.Rollback()
@@ -93,10 +93,10 @@ func UpdateEvent(ctx context.Context, task *tasks.Event) (func(context.Context) 
 			`UPDATE 
 				events 
 			SET 
-				title=$1,description=$2,done=$3,owner=$4,starts_at=$5,ends_at=$6
+				title=$1,description=$2,done=$3,owner=$4,starts_at=$5,ends_at=$6,topic=$8
 			WHERE 
 				id=$7`,
-			task.Title, task.Description, task.Done, task.Owner, task.StartsAt, task.EndsAt, task.ID,
+			task.Title, task.Description, task.Done, task.Owner, task.StartsAt, task.EndsAt, task.ID, task.Topic,
 		)
 
 		if err != nil {
@@ -122,14 +122,14 @@ func UpdateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) (
 	err = tx.QueryRowContext(
 		ctx,
 		`SELECT 
-			title, description, done, owner, deadline 
+			title, description, done, owner, deadline, topic 
 		FROM 
 			tasks_with_deadline 
 		WHERE 
 			id = $1 
 		FOR UPDATE`,
 		task.ID,
-	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.Deadline)
+	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner, &task.Deadline, &task.Topic)
 
 	if err != nil {
 		tx.Rollback()
@@ -144,10 +144,10 @@ func UpdateTaskWithDeadline(ctx context.Context, task *tasks.TaskWithDeadline) (
 			`UPDATE 
 				tasks_with_deadline 
 			SET 
-				title=$1,description=$2,done=$3,owner=$4,deadline=$5
+				title=$1,description=$2,done=$3,owner=$4,deadline=$5,topic=$7
 			WHERE 
 				id=$6`,
-			task.Title, task.Description, task.Done, task.Owner, task.Deadline, task.ID,
+			task.Title, task.Description, task.Done, task.Owner, task.Deadline, task.ID, task.Topic,
 		)
 
 		if err != nil {
@@ -173,7 +173,7 @@ func UpdateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) (func(c
 	err = tx.QueryRowContext(
 		ctx,
 		`SELECT 
-			title, description, done, owner, starts_at, ends_at, period, loop, excepts 
+			title, description, done, owner, starts_at, ends_at, period, loop, excepts, topic 
 		FROM 
 			repeating_tasks 
 		WHERE 
@@ -181,7 +181,7 @@ func UpdateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) (func(c
 		FOR UPDATE`,
 		task.ID,
 	).Scan(&task.Title, &task.Description, &task.Done, &task.Owner,
-		&task.StartsAt, &task.EndsAt, &task.Period, &task.Loop, pq.Array(&task.Except))
+		&task.StartsAt, &task.EndsAt, &task.Period, &task.Loop, pq.Array(&task.Except), &task.Topic)
 
 	if err != nil {
 		tx.Rollback()
@@ -197,11 +197,11 @@ func UpdateRepeatingTask(ctx context.Context, task *tasks.RepeatingTask) (func(c
 				repeating_tasks
 			SET 
 				title=$1,description=$2,done=$3,owner=$4,starts_at=$5,
-				ends_at=$6,period=$7,loop=$8,excepts=$9
+				ends_at=$6,period=$7,loop=$8,excepts=$9,topic=$11
 			WHERE 
 				id=$10`,
 			task.Title, task.Description, task.Done, task.Owner, task.StartsAt,
-			task.EndsAt, task.Period, task.Loop, pq.Array(task.Except), task.ID,
+			task.EndsAt, task.Period, task.Loop, pq.Array(task.Except), task.ID, task.Topic,
 		)
 
 		if err != nil {

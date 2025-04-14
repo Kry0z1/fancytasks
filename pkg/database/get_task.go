@@ -19,7 +19,7 @@ func GetUserBaseTasksTx(ctx context.Context, tx *sql.Tx, username string) ([]tas
 	rows, err := tx.QueryContext(
 		ctx,
 		`SELECT 
-			id, title, description, done, owner 
+			id, title, description, done, owner, topic
 		FROM 
 			base_tasks 
 		WHERE 
@@ -33,7 +33,7 @@ func GetUserBaseTasksTx(ctx context.Context, tx *sql.Tx, username string) ([]tas
 
 	for rows.Next() {
 		var nt tasks.BaseTask
-		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner); err != nil {
+		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.Topic); err != nil {
 			return nil, err
 		}
 		result = append(result, nt)
@@ -57,7 +57,7 @@ func GetUserEventsTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.
 	rows, err := tx.QueryContext(
 		ctx,
 		`SELECT 
-			id, title, description, done, owner, starts_at, ends_at
+			id, title, description, done, owner, starts_at, ends_at, topic
 		FROM 
 			events 
 		WHERE 
@@ -71,7 +71,7 @@ func GetUserEventsTx(ctx context.Context, tx *sql.Tx, username string) ([]tasks.
 
 	for rows.Next() {
 		var nt tasks.Event
-		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.StartsAt, &nt.EndsAt); err != nil {
+		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.StartsAt, &nt.EndsAt, &nt.Topic); err != nil {
 			return nil, err
 		}
 		result = append(result, nt)
@@ -95,7 +95,7 @@ func GetUserTasksWithDeadlineTx(ctx context.Context, tx *sql.Tx, username string
 	rows, err := tx.QueryContext(
 		ctx,
 		`SELECT 
-			id, title, description, done, owner, deadline
+			id, title, description, done, owner, deadline, topic
 		FROM 
 			tasks_with_deadline 
 		WHERE 
@@ -109,7 +109,7 @@ func GetUserTasksWithDeadlineTx(ctx context.Context, tx *sql.Tx, username string
 
 	for rows.Next() {
 		var nt tasks.TaskWithDeadline
-		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.Deadline); err != nil {
+		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.Deadline, &nt.Topic); err != nil {
 			return nil, err
 		}
 		result = append(result, nt)
@@ -134,7 +134,7 @@ func GetUserRepeatingTasksTx(ctx context.Context, tx *sql.Tx, username string) (
 		ctx,
 		`SELECT 
 			id, title, description, done, owner,
-			starts_at, ends_at, period, loop, excepts
+			starts_at, ends_at, period, loop, excepts, topic
 		FROM 
 			repeating_tasks 
 		WHERE 
@@ -148,7 +148,7 @@ func GetUserRepeatingTasksTx(ctx context.Context, tx *sql.Tx, username string) (
 
 	for rows.Next() {
 		var nt tasks.RepeatingTask
-		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.StartsAt, &nt.EndsAt, &nt.Period, &nt.Loop, pq.Array(&nt.Except)); err != nil {
+		if err := rows.Scan(&nt.ID, &nt.Title, &nt.Description, &nt.Done, &nt.Owner, &nt.StartsAt, &nt.EndsAt, &nt.Period, &nt.Loop, pq.Array(&nt.Except), &nt.Topic); err != nil {
 			return nil, err
 		}
 		result = append(result, nt)

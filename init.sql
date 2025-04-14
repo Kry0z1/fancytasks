@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS base_tasks(
     description VARCHAR(512) NOT NULL,
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
+	topic VARCHAR(128) NOT NULL,
 
     FOREIGN KEY (owner) REFERENCES users(username)
 );
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS events(
     owner VARCHAR(128) NOT NULL,
     starts_at TIMESTAMP NOT NULL,
     ends_at TIMESTAMP NOT NULL,
+	topic VARCHAR(128) NOT NULL,
 
     FOREIGN KEY (owner) REFERENCES users(username)
 );
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS tasks_with_deadline(
     done BOOLEAN NOT NULL,
     owner VARCHAR(128) NOT NULL,
     deadline TIMESTAMP NOT NULL,
+	topic VARCHAR(128) NOT NULL,
 
     FOREIGN KEY (owner) REFERENCES users(username)
 );
@@ -47,6 +50,7 @@ CREATE TABLE IF NOT EXISTS repeating_tasks(
     period INTEGER NOT NULL,
     loop INTEGER NOT NULL,
     excepts INTEGER[] NOT NULL,
+	topic VARCHAR(128) NOT NULL,
 
     FOREIGN KEY (owner) REFERENCES users(username)
 );
