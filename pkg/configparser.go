@@ -9,8 +9,7 @@ import (
 )
 
 type Config struct {
-	JWT   JWTConfig   `yaml:"jwt"`
-	Redis RedisConfig `yaml:"redis"`
+	JWT JWTConfig `yaml:"jwt"`
 }
 
 type JWTConfig struct {
@@ -19,14 +18,6 @@ type JWTConfig struct {
 
 func (j JWTConfig) GetExpiresDelta() time.Duration {
 	return time.Duration(j.ExpiresDelta) * time.Minute
-}
-
-type RedisConfig struct {
-	GetTimeLimit int `yaml:"get_time_limit"`
-}
-
-func (r RedisConfig) GetTimeLimitInMilliseconds() time.Duration {
-	return time.Duration(r.GetTimeLimit) * time.Millisecond
 }
 
 var Cfg Config
